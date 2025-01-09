@@ -9,7 +9,7 @@ class AzureCredentialSingleton:
     """
 
     _instance = None  # Class-level attribute to hold the singleton instance
-    _lock = Lock()    # Lock for thread-safe initialization
+    _lock = Lock()  # Lock for thread-safe initialization
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
