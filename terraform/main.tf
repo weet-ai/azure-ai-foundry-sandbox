@@ -10,11 +10,11 @@ data "azurerm_client_config" "current" {}
 
 # Derive resource names based on the naming convention
 locals {
-  resource_group_name   = "${var.base_name}-${var.location}"
-  workspace_name        = "workspace01${replace(var.location, "-", "")}"
-  keyvault_name         = "af01kv${replace(var.location, "-", "")}"
-  storage_account_name  =  "aifoundrysaswc01"
-  app_insights_name     = "${var.base_name}-ai-${var.location}"
+  resource_group_name   = "${var.base_name}-${var.location}03"
+  workspace_name        = "workspace03${replace(var.location, "-", "")}"
+  keyvault_name         = "af03kv${replace(var.location, "-", "")}"
+  storage_account_name  =  "aifoundrysaswc0301"
+  app_insights_name     = "${var.base_name}-ai-${var.location}03"
 }
 
 # Deploy Resource Group
@@ -27,7 +27,7 @@ module "resource_group" {
 # Deploy User Assigned Managed Identity
 module "uami" {
   source              = "./modules/user_assigned_identity"
-  identity_name       = "${var.base_name}-uami-${var.location}"
+  identity_name       = "${var.base_name}-uami-${var.location}03"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.location
 }
@@ -72,21 +72,5 @@ module "ai_foundry_workspace" {
   keyvault_id         = module.keyvault.id
   storage_account_id  = module.storage_account.id
   app_insights_id     = module.application_insights.id
-  depends_on = [module.role_assignment_uami]
-}
-
-module "role_assignment_ai_foundry" {
-  source                          = "./modules/role_assignment_ai_foundry"
-  scope                           = module.keyvault.id
-  workspace_identity_principal_id = module.ai_foundry_workspace.workspace_identity_principal_id
-  depends_on                      = [module.ai_foundry_workspace]
-}
-
-module "model_subscription" {
-  source               = "./modules/model_subscription"
-  workspace_name       = local.workspace_name
-  resource_group_name  = local.resource_group_name
-  name                 = var.model_name
-  model_id             = var.model_id
-  depends_on           = [module.ai_foundry_workspace]
+  depends_on          = [module.uami, module.keyvault, module.role_assignment_uami]
 }
