@@ -1,6 +1,7 @@
 from azure.ai.ml import MLClient
 from azure.ai.ml.entities import MarketplaceSubscription
 import logging
+from typing import Iterable
 
 
 logging.basicConfig(level="DEBUG")
@@ -9,10 +10,7 @@ logging.basicConfig(level="DEBUG")
 def create_model_subscription(
     ml_client: MLClient,
     model_id: str,
-    subscription_name: str,
-    subscription_id: str,
-    resource_group_name: str,
-    workspace_name: str,
+    subscription_name: str
 ):
 
     marketplace_subscription = MarketplaceSubscription(
@@ -27,3 +25,16 @@ def create_model_subscription(
     ).result()
 
     return marketplace_subscription
+
+
+def get_model_subscription(
+    ml_client: MLClient,
+    model_id: str
+):
+    
+    subscriptions: Iterable[MarketplaceSubscription] = ml_client.marketplace_subscriptions.list()
+    for subscription in subscriptions:
+        if model_id == subscription.model_id:
+            return subscription
+        
+    return None
