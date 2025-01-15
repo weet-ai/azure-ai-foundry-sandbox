@@ -6,3 +6,4 @@ client = MLClient(
     workspace_name=workspace_name,
 )
 """
+
